@@ -1,0 +1,19 @@
+{% extends "site_base.html" %}
+
+{% block nav %}
+  {% load menuloader %}
+  {% menu page.url %}
+{% endblock nav %}
+
+{% block content %}
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+        {% load block_tags %}
+        {% for blockData in page.blocks.all %}
+          {% blockmaker blockData %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock content %}

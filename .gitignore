@@ -1,0 +1,27 @@
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Running Vagrant Info #
+########################
+.vagrant/
+Vagrantfile
+setup.sh
+
+# Compiled Code #
+#################
+*.pyc
+
+# Editor files #
+################
+*.swp
+
+# Secrets #
+###########
+secret_keys.json

@@ -1,0 +1,34 @@
+{% load mptt_tags %}
+{% load block_tags %}
+
+{% get_depth block.accordionblock.accordions.all as depth_map %}
+  <div class="panel-group accordion-group" id="accordion-{{ block.id }}-{{ node.id }}" role="tablist" aria-multiselectable="true">
+{% recursetree block.accordionblock.accordions.all %}
+  {% if not node.is_leaf_node %}
+      <div class="panel">
+        <div class="panel-heading accordion-heading-{{ node.level }}" role="tab" id="heading-{{ block.id }}-{{ node.id }}">
+          <h4 class="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#accordion-{{ block.id }}-{{ node.id }}" href="#collapse-{{ block.id }}-{{ node.id }}" aria-expanded="true" aria-controls="collapse-{{ block.id }}-{{ node.id }}">
+              {{ node.text }}
+            </a>
+          </h4>
+        </div>
+        <div id="collapse-{{ block.id }}-{{ node.id }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{{ block.id }}-{{ node.id }}">
+          <div class="panel-body">
+            {% if depth_map|is_penultimate_level:node %}
+              <ul class="list-group">
+                {{ children }}
+              </ul>
+            {% else %}
+              <div class="panel-group accordion-group" id="accordion-{{ block.id }}-{{ node.id }}" role="tablist" aria-multiselectable="true">
+                {{ children }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+  {% else %}
+    <li class="list-group-item">{{ node.text|safe }}</li>
+  {% endif %}
+  {% endrecursetree %}
+</div>

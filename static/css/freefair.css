@@ -1,0 +1,151 @@
+/**********************************************************************************************
+Colors
+***********************************************************************************************/
+/******************************************************************************************
+Animation Mixins
+******************************************************************************************/
+/**********************************************************************************************
+General 
+***********************************************************************************************/
+body {
+  background: #F5F5F5;
+  color: #616161;
+  font-family: 'Roboto', sans-serif; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto', sans-serif; }
+
+.panel {
+  width: 100%;
+  border-radius: 0px;
+  box-shadow: 0 4px 1px rgba(0, 0, 0, 0.1); }
+
+.btn {
+  border-radius: 0;
+  -webkit-transition: all 0.35s;
+  -moz-transition: all 0.35s;
+  transition: all 0.35s; }
+
+.btn-primary {
+  background: #2196F3; }
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background: #0D47A1; }
+
+.panel-group .panel + .panel {
+  margin-top: 0; }
+
+.list-group .list-group-item:first-child {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px; }
+
+.list-group .list-group-item:last-child {
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px; }
+
+/**********************************************************************************************
+Header
+***********************************************************************************************/
+.freefair-header {
+  background: #3F51B5; }
+  .freefair-header h1 {
+    margin: 50px 0px 50px 30px;
+    color: #FFF; }
+
+/**********************************************************************************************
+Navbar
+***********************************************************************************************/
+.navbar-freefair {
+  border-radius: 0px;
+  background: #303F9F;
+  border-bottom-width: 0px; }
+  .navbar-freefair .navbar-nav a {
+    border: 0px #303F9F solid;
+    color: #9FA8DA;
+    font-family: 'Roboto', sans-serif;
+    -webkit-transition: all 0.35s;
+    -moz-transition: all 0.35s;
+    transition: all 0.35s; }
+    .navbar-freefair .navbar-nav a:hover {
+      color: #F44336;
+      background: #303F9F; }
+    .navbar-freefair .navbar-nav a.active {
+      border-bottom: 6px #F5F5F5 solid;
+      color: #F5F5F5; }
+
+/**********************************************************************************************
+Block
+***********************************************************************************************/
+.block-title {
+  margin: 30px 30px;
+  font-weight: 700;
+  color: #616161; }
+
+.text-content {
+  margin: 10px 30px; }
+
+/**********************************************************************************************
+Accordion
+Styling by Shehab Eltawel
+https://codepen.io/shehab-eltawel/pen/dYwOgX
+***********************************************************************************************/
+.accordion-group {
+  border: 1px 1px 0 1px solid transparent;
+  box-shadow: 0 4px 1px rgba(0, 0, 0, 0.2);
+  /* #bs-collapse icon scale option */ }
+  .accordion-group .panel {
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-color: #fff;
+    background: none;
+    box-shadow: none; }
+  .accordion-group .panel:last-child {
+    border-bottom: none; }
+  .accordion-group .panel-group .panel {
+    border-radius: 0; }
+  .accordion-group .panel-heading {
+    background-color: #2196F3;
+    border-radius: 0;
+    border: none;
+    color: #FFF;
+    padding: 0; }
+  .accordion-group .accordion-heading-0 {
+    background-color: #0D47A1; }
+  .accordion-group .accordion-heading-1 {
+    background-color: #1976D2; }
+  .accordion-group .panel:last-child .panel-heading {
+    border-bottom: none; }
+  .accordion-group .panel-title a {
+    display: block;
+    color: #fff;
+    padding: 15px;
+    position: relative; }
+  .accordion-group .panel-heading a:before {
+    content: '\f0fe';
+    position: absolute;
+    font-family: 'FontAwesome';
+    right: 5px;
+    top: 10px;
+    font-size: 24px;
+    transition: all 0.5s;
+    transform: scale(1); }
+  .accordion-group .panel-heading.active a:before {
+    content: ' ';
+    transition: all 0.5s;
+    transform: scale(0); }
+  .accordion-group .panel-heading a:after {
+    content: ' ';
+    font-size: 24px;
+    position: absolute;
+    font-family: 'FontAwesome';
+    right: 5px;
+    top: 10px;
+    transform: scale(0);
+    transition: all 0.5s; }
+  .accordion-group .panel-heading.active a:after {
+    content: '\f146';
+    transform: scale(1);
+    transition: all 0.5s; }
+
+/*# sourceMappingURL=../../../static/css/freefair.css.map */

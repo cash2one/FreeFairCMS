@@ -1,0 +1,29 @@
+{% load staticfiles %}
+
+<div>
+  <form action="/send_email/" method="POST" id="contact-form">
+    {% csrf_token %}
+
+    <div class="form-group" id="name-wrapper">
+      <label for="contact-name">Your Name</label>
+      <input type="text" name="name" id="contact-name" class="form-control" />
+    </div>
+
+    <div class="form-group" id="email-wrapper">
+      <label for="contact-email">Your Email</label>
+      <input type="email" name="email" id="contact-email" class="form-control" />
+    </div>
+
+    <div class="form-group" id="message-wrapper">
+      <label for="contact-message">Message</label>
+      <textarea class="form-control" rows="10" id="contact-message" name="message"></textarea>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Submit</button>
+  </form>
+
+  <h4 class="text-success" id="contact-success"></h4>
+  <h4 class="text-danger" id="contact-error"></h4>
+</div>
+
+<script src="{% static "js/contact_form.js" %}"></script>
