@@ -25,3 +25,13 @@ setup.sh
 # Secrets #
 ###########
 secret_keys.json
+
+# Collected Static #
+####################
+static/
+media/
+
+# Built Versions #
+##################
+output/
+.netlify

@@ -1,9 +1,0 @@
-/******************************************************************************************
-Animation Mixins
-******************************************************************************************/
-
-@mixin all-transition($speed) {
-  -webkit-transition: all $speed;
-  -moz-transition: all $speed;
-  transition: all $speed;
-}

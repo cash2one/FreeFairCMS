@@ -38,3 +38,7 @@ LOGGING = {
         },
     },
 }
+
+SITE_ID = 2
+
+NETLIFY_SITE = SECRETS['netlify_prod_site']

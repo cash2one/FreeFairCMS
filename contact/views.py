@@ -1,3 +1,7 @@
+import requests
+import json
+
+from django.conf import settings
 from django.core.mail import EmailMessage
 from rest_framework import status
 from rest_framework.views import APIView
@@ -17,6 +21,14 @@ class ContactFormView(APIView):
 
         if email_serializer.is_valid():
             email_data = email_serializer.data
+
+            r = requests.post('https://www.google.com/recaptcha/api/siteverify', {
+                    'secret': settings.RECAPTCHA_PRIVATE_KEY,
+                    'response': email_data['recaptcha']
+                })
+
+            if not json.loads(r.content.decode())['success']:
+                return Response({'non_field_errors': 'invalid reCaptcha. Please verify your identity'})
 
             email = EmailMessage(
                 'Contact Form message from {}'.format(email_data['name']),

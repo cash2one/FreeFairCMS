@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^api/pages/', include('pages.api_urls')),
     url(r'^contact/', include('contact.urls')),
     url(r'^', include('pages.urls', namespace="pages")),
+    url(r'^', include('django.contrib.auth.urls')),
 ]

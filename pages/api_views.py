@@ -1,6 +1,10 @@
-from rest_framework import generics
+import subprocess
+
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.core.management import call_command
+from django.conf import settings
 
 from .models.pages import Page
 from .models.blocks import Block, TextBlock, AccordionBlock, Accordion
@@ -82,3 +86,19 @@ class NewAccordionView(generics.CreateAPIView):
 
 class DeleteAccordionView(generics.DestroyAPIView):
     queryset = Accordion.objects.all()
+
+
+class PublishView(APIView):
+    def get(self, request, *args, **kwargs):
+        call_command('compilescss')
+        call_command('build')
+        
+        try:
+            subprocess.run(
+                args=['netlify', 'deploy', '-s', settings.NETLIFY_SITE, '-p', settings.BUILD_DIR],
+                check=True
+            )
+        except subprocess.CalledProcessError:
+            return Response({'error': 'Unable to publish site'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(status.HTTP_204_NO_CONTENT)

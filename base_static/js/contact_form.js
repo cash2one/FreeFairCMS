@@ -10,7 +10,8 @@ function send_form() {
   var data = {
     name: $('#contact-name').val(),
     email: $('#contact-email').val(),
-    message: $('#contact-message').val()
+    message: $('#contact-message').val(),
+    recaptcha: grecaptcha.getResponse()
   };
 
   $.ajax({

@@ -24,3 +24,7 @@ ROOT_URLCONF = 'freefair.dev_urls'
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+SITE_ID = 1
+
+NETLIFY_SITE = SECRETS['netlify_dev_site']

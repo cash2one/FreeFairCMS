@@ -30,14 +30,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'sass_processor',
-    'captcha',
     'mptt',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_auth',
     'corsheaders',
     'allauth',
     'allauth.account',
     'django_extensions',
+    'bakery',
     'shared',
     'editors',
     'pages'
@@ -182,10 +183,15 @@ REST_AUTH_SERIALIZERS = {
 RECAPTCHA_PUBLIC_KEY = '6LfJgBIUAAAAAOsXSQ43N_CMiqKDhwLDEEWAbaHs'
 RECAPTCHA_PRIVATE_KEY = SECRETS['recaptcha_key']
 
-CAPTCHA_AJAX = True
-
 
 # Python-postmark settings
 POSTMARK_API_KEY = SECRETS['postmark_key']
 POSTMARK_SENDER = 'info@freefairunfettered.org'
 DEFAULT_FROM_EMAIL = 'info@freefairunfettered.org'
+
+# Django-bakery settings
+BUILD_DIR = os.path.join(BASE_DIR, 'output/')
+BAKERY_VIEWS = [
+    'pages.views.SinglePageView',
+    'pages.views.IndexView'
+]

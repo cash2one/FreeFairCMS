@@ -148,4 +148,8 @@ https://codepen.io/shehab-eltawel/pen/dYwOgX
     transform: scale(1);
     transition: all 0.5s; }
 
-/*# sourceMappingURL=../../../static/css/freefair.css.map */
+/**********************************************************************************************
+General 
+***********************************************************************************************/
+#contact-form .btn {
+  margin-top: 10px; }

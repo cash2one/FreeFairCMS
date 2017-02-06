@@ -90,6 +90,9 @@ class Page(OrderedModel):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return '/{}/'.format(self.url)
+
 
 class StatePage(Page):
     """
