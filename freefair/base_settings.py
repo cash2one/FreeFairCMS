@@ -195,3 +195,6 @@ BAKERY_VIEWS = [
     'pages.views.SinglePageView',
     'pages.views.IndexView'
 ]
+
+# Netlify settings
+NETLIFY_TOKEN = SECRETS['netlify_access_token']

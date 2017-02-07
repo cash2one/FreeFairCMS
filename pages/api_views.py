@@ -1,4 +1,8 @@
 import subprocess
+import os
+import zipfile
+import requests
+from shutil import make_archive
 
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -88,17 +92,42 @@ class DeleteAccordionView(generics.DestroyAPIView):
     queryset = Accordion.objects.all()
 
 
+def zipdir(path, ziph):
+    """
+    Zip code courtesy of:
+    http://stackoverflow.com/questions/1855095/how-to-create-a-zip-archive-of-a-directory/
+    """
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            ziph.write(
+                os.path.join(root, file),
+                os.path.relpath(os.path.join(root, file), path)
+            )
+
+
 class PublishView(APIView):
     def get(self, request, *args, **kwargs):
         call_command('compilescss')
         call_command('build')
-        
-        try:
-            subprocess.run(
-                args=['netlify', 'deploy', '-s', settings.NETLIFY_SITE, '-p', settings.BUILD_DIR],
-                check=True
-            )
-        except subprocess.CalledProcessError:
+
+        buildzip = os.path.join(settings.BASE_DIR, 'output.zip')
+
+        zipf = zipfile.ZipFile(buildzip, 'w', zipfile.ZIP_DEFLATED)
+        zipdir(settings.BUILD_DIR, zipf)
+        zipf.close()
+
+        data = open(buildzip, 'rb').read()
+
+        r = requests.post(
+                url='https://api.netlify.com/api/v1/sites/{}/deploys'.format(settings.NETLIFY_SITE),
+                data=data,
+                headers={
+                    'Content-Type': 'application/zip',
+                    'Authorization': 'Bearer {}'.format(settings.NETLIFY_TOKEN)
+                })
+
+        if r.status_code >= 300:
+            print(r.json())
             return Response({'error': 'Unable to publish site'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(status.HTTP_204_NO_CONTENT)
