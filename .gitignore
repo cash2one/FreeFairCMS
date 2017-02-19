@@ -37,6 +37,7 @@ media/
 output/
 .netlify
 output.zip
+netlify.toml
 
 # Data #
 ########
