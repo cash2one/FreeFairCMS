@@ -127,7 +127,6 @@ def zipdir(path, ziph):
 
 class PublishView(APIView):
     def get(self, request, *args, **kwargs):
-        call_command('compilescss')
         call_command('build')
 
         buildzip = os.path.join(settings.BASE_DIR, 'output.zip')
