@@ -37,3 +37,7 @@ media/
 output/
 .netlify
 output.zip
+
+# Data #
+########
+data/

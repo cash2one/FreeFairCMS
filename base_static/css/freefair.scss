@@ -8,6 +8,7 @@ body {
   background: $grey-lightest;
   color: $grey-dark;
   font-family: 'Roboto', sans-serif;
+  font-size: 15px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -259,10 +260,23 @@ InfoBlock
     box-shadow: none;
 
     .tab-content {
-      padding: 40px;
+      padding: 10px;
+
+      @include tablet-and-up {
+        padding: 40px;
+      }
 
       .flex-block {
-        padding-bottom: 30px;
+        padding: 0 15px 30px 15px;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+
+        li {
+          margin-bottom: 10px;
+        }
       }
     }
 
