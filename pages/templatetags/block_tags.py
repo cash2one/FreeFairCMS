@@ -7,7 +7,8 @@ register = template.Library()
 CONTENT_TEMPLATES = {
     'A': 'pages/blocks/accordion.html',
     'T': 'pages/blocks/text.html',
-    'C': 'pages/blocks/contact.html'
+    'C': 'pages/blocks/contact.html',
+    'I': 'pages/blocks/info.html',
 }
 
 

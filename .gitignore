@@ -21,6 +21,7 @@ setup.sh
 # Editor files #
 ################
 *.swp
+*.swo
 
 # Secrets #
 ###########

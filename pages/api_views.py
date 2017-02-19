@@ -11,9 +11,10 @@ from django.core.management import call_command
 from django.conf import settings
 
 from .models.pages import Page
-from .models.blocks import Block, TextBlock, AccordionBlock, Accordion
+from .models.blocks import Block, TextBlock, AccordionBlock, Accordion, InfoBlock, \
+    InfoCategory, InfoContent
 from .serializers import PageListSerializer, PageFullSerializer, BlockSerializer, BLOCKTYPES, \
-    AccordionSerializer
+    AccordionSerializer, InfoCategorySerializer, InfoContentSerializer
 
 
 class AllRegularPagesView(generics.ListCreateAPIView):
@@ -90,6 +91,25 @@ class NewAccordionView(generics.CreateAPIView):
 
 class DeleteAccordionView(generics.DestroyAPIView):
     queryset = Accordion.objects.all()
+
+
+class NewInfoCategoryView(generics.CreateAPIView):
+    queryset = InfoCategory.objects.all()
+    serializer_class = InfoCategorySerializer
+
+
+class DeleteInfoCategoryView(generics.DestroyAPIView):
+    queryset = InfoCategory.objects.all()
+
+
+class NewInfoContentView(generics.CreateAPIView):
+    queryset = InfoContent.objects.all()
+    serializer_class = InfoContentSerializer
+
+    
+
+class DeleteInfoContentView(generics.DestroyAPIView):
+    queryset = InfoContent.objects.all()
 
 
 def zipdir(path, ziph):

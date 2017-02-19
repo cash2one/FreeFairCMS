@@ -1,0 +1,67 @@
+<div class="panel panel-infoblock">
+  <!-- category tabs -->
+  <ul class="nav nav-tabs nav-justified" role="tablist">
+    {% for category in block.infoblock.categories.all %}
+    <li role="presentation" {% if forloop.first %}class="active"{% endif %}>
+      <a href="#category-{{ block.id }}-{{ category.id }}">{{ category.name.upper }}</a>
+    </li>
+    {% endfor %}
+  </ul><!-- end category tabs -->
+
+  <!-- category contents -->
+  <div class="tab-content">
+    {% for category in block.infoblock.categories.all %}
+    <div role="tabpanel" class="tab-pane {% if forloop.first %}active{% endif %}" id="category-{{ block.id }}-{{ category.id }}">
+
+      <!-- content panel -->
+      <div class="panel panel-content" id="content-tabs-{{ block.id }}-{{ category.id }}">
+        <!-- content tabs -->
+        <ul class="nav nav-tabs nav-justified" role="tablist">
+          {% for content in category.contents.all %}
+          <li role="presentation" {% if forloop.first %}class="active"{% endif %}>
+            <a href="#content-{{ block.id }}-{{ content.id }}">{{ content.name.upper }}</a>
+          </li>
+          {% endfor %}
+        </ul><!-- end content tabs -->
+
+        <!-- content container -->
+        <div class="tab-content">
+          {% for content in category.contents.all %}
+          <div role="tabpanel" class="tab-pane {% if forloop.first %}active{% endif %}" id="content-{{ block.id }}-{{ content.id }}">
+            <div class="flex-wrapper">
+              <div class="flex-block full">
+                <p>{{ content.description|safe }}</p>
+              </div>
+              <div class="flex-block half">
+                <h4>How to Address it</h4>
+                {{ content.addess|safe }}
+              </div>
+              <div class="flex-block half">
+                <h4>Templates for Action</h4>
+                {{ content.templates|safe }}
+              </div>
+              <div class="flex-block half">
+                <h4>Groups &amp; Organizations Working on This</h4>
+                {{ content.groups|safe }}
+              </div>
+              <div class="flex-block half">
+                <h4>Readin &amp; Watching List</h4>
+                {{ content.reading|safe }}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div><!-- end content container -->
+      </div><!-- end content panel -->
+          
+    </div>
+    {% endfor %}
+  </div><!-- end category contens -->
+</div>
+
+<script>
+  $('.nav-tabs a').click(function (e) {
+    e.preventDefault();
+    $(this).tab('show');
+  });
+</script>

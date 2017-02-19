@@ -11,12 +11,13 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Josefin Sans', sans-serif;
 }
 
 .panel {
   width: 100%;
   border-radius: 0px;
+  border: 4px $blue-main solid;
   box-shadow: 0 4px 1px rgba(0, 0, 0, .1);
 
 }
@@ -54,11 +55,18 @@ h1, h2, h3, h4, h5, h6 {
 Header
 ***********************************************************************************************/
 .freefair-header {
-  background: $indigo-mid;
+  background: $white url('../img/Banner.jpg') no-repeat top right;
+  background-size: cover;
 
   h1 {
-    margin: 50px 0px 50px 30px;
-    color: $white;
+    margin: 50px 0px;
+    color: $red-main;
+    text-align: right;
+    font-style: italic;
+
+    @include tablet-and-up {
+      margin-right: 100px;
+    }
   }
 }
 
@@ -67,25 +75,56 @@ Navbar
 ***********************************************************************************************/
 .navbar-freefair {
   border-radius: 0px;
-  background: $indigo-dark;
-  border-bottom-width: 0px;
+  background: $white;
+  border: 6px $red-main solid;
+  border-right-width: 0;
+  border-left-width: 0;
 
   .navbar-nav {
-    a {
-      border: 0px $indigo-dark solid;
-      color: $indigo-lightest;
-      font-family: 'Roboto', sans-serif;
+    > li 
+      > a {
+          border: 0px $blue-main solid;
+          color: $blue-main;
+          font-family: 'Josefin Sans', sans-serif;
+          @include all-transition(.35s);
+
+          &:hover {
+            color: $red-main;
+            background: $white;
+          }
+
+          &.active {
+            @include tablet-and-up {
+              border-bottom: 6px $red-main solid;
+            }
+            color: $red-main;
+          }
+
+          @include tablet-and-up {
+            padding-top: 19px;
+            padding-bottom: 11px;
+          }
+        }
+  }
+
+  .navbar-toggle {
+    border: $blue-main 2px solid;
+    border-radius: 0;
+    @include all-transition(.35s);
+    background: $white;
+
+    &:hover, &:focus {
+      background: $blue-main;
+
+      .icon-bar {
+        border: $white 2px solid;
+      }
+    }
+
+    .icon-bar {
+      border-radius: 0;
+      border: $blue-main 2px solid;
       @include all-transition(.35s);
-
-      &:hover {
-        color: $red-mid;
-        background: $indigo-dark;
-      }
-
-      &.active {
-        border-bottom: 6px $grey-lightest solid;
-        color: $grey-lightest;
-      }
     }
   }
 }
@@ -131,19 +170,19 @@ https://codepen.io/shehab-eltawel/pen/dYwOgX
 
 
   .panel-heading {
-    background-color: $blue-mid;
     border-radius: 0;
     border: none;
     color: $white;
     padding: 0;
+    background: $blue-darkest;
   }
 
   .accordion-heading-0 {
-    background-color: $blue-darkest;
+    background-color: $blue-main;
   }
 
   .accordion-heading-1 {
-    background-color: $blue-dark;
+    background-color: #434e89;
   }
 
   .panel:last-child .panel-heading {
@@ -200,5 +239,136 @@ General
 #contact-form {
   .btn {
     margin-top: 10px;
+  }
+}
+/**********************************************************************************************
+InfoBlock
+***********************************************************************************************/
+.panel-I {
+  .text-content {
+    margin: 0;
+  }
+
+  .panel-infoblock {
+    border: none;
+    box-shadow: none;
+  }
+
+  .panel-content {
+    border: none;
+    box-shadow: none;
+
+    .tab-content {
+      padding: 40px;
+
+      .flex-block {
+        padding-bottom: 30px;
+      }
+    }
+
+    .nav-tabs.nav-justified > li > a {
+      font-size: 12px;
+    }
+
+  }
+
+  .nav-tabs.nav-justified > li > a {
+    font-size: 16px;
+    font-family: 'Josefin Sans', sans-serif;
+    @include generic-transition(background .35s, color .35s);
+    background: $blue-main-transparent;
+    color: $blue-main;
+    border-top-width: 0;
+    border-radius: 0;
+  }
+
+  .nav-tabs.nav-justified > li > a:hover {
+    color: $red-main;
+  }
+
+  .nav-tabs.nav-justified > li > a,
+  .nav-tabs.nav-justified > li.active > a,
+  .nav-tabs.nav-justified > li.active > a:hover {
+    border: none;
+
+    @include tablet-and-up {
+      border: 4px $blue-main solid;
+      border-top-width: 0px;
+    }
+  }
+
+  .nav-tabs.nav-justified > li.active > a,
+  .nav-tabs.nav-justified > li.active > a:hover {
+    border-left-width: 0px;
+    color: $white;
+    background: $blue-main;
+  }
+
+  .panel-content {
+    .nav-tabs.nav-justified > li > a {
+      color: $blue-main;
+      background: $white;
+    }
+
+    .nav-tabs.nav-justified > li > a:hover {
+      color: $red-main;
+    }
+
+    .nav-tabs.nav-justified > li.active > a,
+    .nav-tabs.nav-justified > li.active > a:hover {
+      background: $white;
+      color: $red-main;
+      border-color: $white;
+    }
+
+    .nav-tabs.nav-justified > li.active + li > a {
+      @include tablet-and-up {
+        border-left-width: 4px;
+      }
+    }
+  }
+
+  .nav-tabs.nav-justified > li + li > a {
+    @include tablet-and-up {
+      border-left-width: 0;
+    }
+  }
+
+  .nav-tabs.nav-justified > li:last-child > a,
+  .nav-tabs.nav-justified > li:last-child > a:hover {
+    @include tablet-and-up {
+      border-right-width: 0;
+    }
+  }
+
+  .nav-tabs.nav-justified > li:first-child > a,
+  .nav-tabs.nav-justified > li:first-child > a:hover {
+    @include tablet-and-up {
+      border-left-width: 0;
+    }
+  }
+}
+
+.flex-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+
+  .flex-block {
+    display: inline-block;
+
+    &.full {
+      width: 100%;
+    }
+
+    &.half {
+      width: 100%;
+
+      @include desktop {
+        width: 50%;
+      }
+    }
+
   }
 }

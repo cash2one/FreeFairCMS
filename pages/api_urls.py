@@ -12,5 +12,9 @@ urlpatterns = [
     url(r'^admin/blocks/(?P<pk>\d+)/$', views.BlockDeleteView.as_view()),
     url(r'^admin/blocks/accordions/new/$', views.NewAccordionView.as_view()),
     url(r'^admin/blocks/accordions/(?P<pk>\d+)/$', views.DeleteAccordionView.as_view()),
+    url(r'^admin/blocks/info/category/new/$', views.NewInfoCategoryView.as_view()),
+    url(r'^admin/blocks/info/category/(?P<pk>\d+)/$', views.DeleteInfoCategoryView.as_view()),
+    url(r'^admin/blocks/info/content/new/$', views.NewInfoContentView.as_view()),
+    url(r'^admin/blocks/info/content/(?P<pk>\d+)/$', views.DeleteInfoContentView.as_view()),
     url(r'^admin/publish/$', views.PublishView.as_view()),
 ]

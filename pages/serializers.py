@@ -2,7 +2,8 @@ from rest_framework import serializers
 
 from shared.serializers import LocalDateTimeField
 from .models.pages import Page
-from .models.blocks import Block, TextBlock, AccordionBlock, Accordion, ContactBlock
+from .models.blocks import Block, TextBlock, AccordionBlock, Accordion, ContactBlock, \
+        InfoBlock, InfoCategory, InfoContent
 from editors.models import Editor
 
 
@@ -76,6 +77,76 @@ class ContactBlockSerializer(serializers.ModelSerializer):
         fields = SHARED_BLOCK_FIELDS
 
 
+class InfoContentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InfoContent
+        fields = [
+                'name',
+                'description',
+                'address',
+                'templates',
+                'groups',
+                'reading',
+                'id',
+                'category',
+                'placement',
+        ]
+
+
+class InfoCategorySerializer(serializers.ModelSerializer):
+    contents = InfoContentSerializer(read_only=True, many=True)
+
+    def to_internal_value(self, data):
+        """
+        If it's an update (ie. self.instance exists),
+        update the categories and contents as well
+        """
+        if self.instance is not None:
+            content_data = data.pop('contents')
+            content_ids = [c['id'] for c in content_data]
+            contents = InfoContent.objects.filter(id__in=content_ids)
+
+            for content in contents:
+                single_content = [c for c in content_data if c['id'] == content.id][0]
+                s = InfoContentSerializer(content, data=single_content, context=self.context)
+                s.is_valid(raise_exception=True)
+
+                s.save()
+
+        return super(InfoCategorySerializer, self).to_internal_value(data)
+
+    class Meta:
+        model = InfoCategory
+        fields = ['name', 'contents', 'block', 'id', 'placement']
+
+
+class InfoBlockSerializer(serializers.ModelSerializer):
+    categories = InfoCategorySerializer(read_only=True, many=True)
+
+    def to_internal_value(self, data):
+        """
+        If it's an update (ie. self.instance exists),
+        update the categories and contents as well
+        """
+        if self.instance is not None:
+            category_data = data.pop('categories')
+            category_ids = [c['id'] for c in category_data]
+            categories = InfoCategory.objects.filter(id__in=category_ids)
+
+            for category in categories:
+                single_category = [c for c in category_data if c['id'] == category.id][0]
+                s = InfoCategorySerializer(category, data=single_category, context=self.context)
+                s.is_valid(raise_exception=True)
+
+                s.save()
+
+        return super(InfoBlockSerializer, self).to_internal_value(data)
+
+    class Meta:
+        model = InfoBlock
+        fields = SHARED_BLOCK_FIELDS + ['categories']
+
+
 BLOCKTYPES = {
     Block.TEXT: {
         "queryset": TextBlock.objects.all(),
@@ -88,7 +159,11 @@ BLOCKTYPES = {
     Block.CONTACT: {
         "queryset": ContactBlock.objects.all(),
         "serializer_class": ContactBlockSerializer 
-    }
+    },
+    Block.INFO: {
+        "queryset": InfoBlock.objects.all(),
+        "serializer_class": InfoBlockSerializer
+    },
 }
 
 

@@ -13,17 +13,19 @@ class Block(OrderedModel):
     TEXT = "T"
     ACCORDION = "A"
     CONTACT = "C"
+    INFO = "I"        
     TYPES = [
         (TEXT, "Text"), 
         (ACCORDION, "Accordion"),
         (CONTACT, 'Contact'),
+        (INFO, "Info"),
     ]
 
     page = models.ForeignKey(Page, related_name="blocks")
     title = models.CharField(max_length=250, blank=True)
 
-    placement = models.PositiveSmallIntegerField(blank=True)
     blocktype = models.CharField(max_length=50, choices=TYPES, blank=True)
+    placement = models.PositiveSmallIntegerField(blank=True)
 
     class Meta:
         ordering = ('placement', )
@@ -95,3 +97,69 @@ class ContactBlock(Block):
     def save(self, *args, **kwargs):
         self.blocktype = Block.CONTACT
         super(ContactBlock, self).save(*args, **kwargs)
+
+
+class InfoBlock(Block):
+    """
+    Block for containg the multilevel sections of:
+    - Overall Category (e.g. Free, Fair, and Unfettered)
+        - Subcategory (e.g. Gerrymandering)
+            - How To Adress It
+            - Templates for Action
+            - Groups & Organizations Working on This
+            - Reading & Watching List
+    """
+    def __str__(self):
+        return "Action Block"
+
+    def save(self, *args, **kwargs):
+        self.blocktype = Block.INFO
+        super(InfoBlock, self).save(*args, **kwargs)
+
+
+class InfoCategory(OrderedModel):
+    """
+    Main Category for an InfoBlock
+    """
+    name = models.CharField(max_length=255)
+
+    block = models.ForeignKey(InfoBlock, related_name="categories", on_delete=models.CASCADE)
+    placement = models.PositiveSmallIntegerField(blank=True)
+
+    class Meta:
+        ordering = ('placement', )
+
+    ordering_field = 'placement'
+    
+    def get_ordering_queryset(self):
+        return self.block.categories.all()
+
+    def __str__(self):
+        return self.name
+
+
+class InfoContent(OrderedModel):
+    """
+    Main Structure of an info Block
+    """
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+
+    address = models.TextField(blank=True)
+    templates = models.TextField(blank=True)
+    groups = models.TextField(blank=True)
+    reading = models.TextField(blank=True)
+
+    category = models.ForeignKey(InfoCategory, related_name="contents", on_delete=models.CASCADE)
+    placement = models.PositiveSmallIntegerField(blank=True)
+
+    class Meta:
+        ordering = ('placement', )
+
+    ordering_field = 'placement'
+    
+    def get_ordering_queryset(self):
+        return self.category.contents.all()
+
+    def __str__(self):
+        return self.name
