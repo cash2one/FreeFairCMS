@@ -21,8 +21,6 @@ class UpdateRelatedMixin:
         returns the data with the nested relation data removed
         """
         serializer = self.Meta.update_related_serializer
-        with open('output.txt', 'w') as f:
-            f.write(str(data))
 
         field_data = data.pop(self.Meta.update_related_field)
         field_ids = [c['id'] for c in field_data]
