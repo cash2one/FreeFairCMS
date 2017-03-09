@@ -17,4 +17,8 @@ urlpatterns = [
     url(r'^admin/blocks/info/content/new/$', views.NewInfoContentView.as_view()),
     url(r'^admin/blocks/info/content/(?P<pk>\d+)/$', views.DeleteInfoContentView.as_view()),
     url(r'^admin/publish/$', views.PublishView.as_view()),
+    url(r'^admin/state/all/$', views.AllStatePagesView.as_view()),
+    url(r'^admin/state/unused/$', views.UnusedStatesView.as_view()),
+    url(r'^admin/state/new/$', views.NewStatePageView.as_view()),
+    url(r'^admin/state/(?P<state>\w+)/$', views.SingleStatePagesView.as_view()),
 ]

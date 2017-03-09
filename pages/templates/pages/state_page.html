@@ -1,0 +1,37 @@
+{% extends "site_base.html" %}
+
+{% block nav %}
+  {% load menuloader %}
+  {% menu 'state' %}
+{% endblock nav %}
+
+{% block content %}
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-10 col-lg-offset-1">
+        <div class="panel state-title">
+          <h2 class="text-center">{{ page.get_state_display|upper }}</h2>
+        </div>
+      </div>
+
+      <div class="col-md-5 col-lg-4 col-lg-offset-1 state-checkboxes">
+        {% load block_tags %}
+        {% for blockData in page.blocks.all %}
+          {% if blockData.blocktype == 'H' %}
+            {% blockmaker blockData %}
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="col-md-7 col-lg-6">
+        {% load block_tags %}
+        {% for blockData in page.blocks.all %}
+          {% if blockData.blocktype != 'H'%}
+            {% blockmaker blockData %}
+          {% endif %}
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+{% endblock content %}

@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.functional import cached_property
 from mptt.models import MPTTModel, TreeForeignKey
 
 from shared.models import OrderedModel
@@ -14,15 +15,18 @@ class Block(OrderedModel):
     ACCORDION = "A"
     CONTACT = "C"
     INFO = "I"        
+    CHECKBOX = "H"
     TYPES = [
         (TEXT, "Text"), 
         (ACCORDION, "Accordion"),
         (CONTACT, 'Contact'),
         (INFO, "Info"),
+        (CHECKBOX, "Checkbox"),
     ]
 
     page = models.ForeignKey(Page, related_name="blocks")
     title = models.CharField(max_length=250, blank=True)
+    help_text = models.TextField(blank=True)
 
     blocktype = models.CharField(max_length=50, choices=TYPES, blank=True)
     placement = models.PositiveSmallIntegerField(blank=True)
@@ -47,7 +51,7 @@ class TextBlock(Block):
     """
     Normal Paragraph-based text block
     """
-    text = models.TextField(default="")
+    text = models.TextField(blank=True)
 
     def __str__(self):
         return self.title
@@ -160,6 +164,43 @@ class InfoContent(OrderedModel):
     
     def get_ordering_queryset(self):
         return self.category.contents.all()
+
+    def __str__(self):
+        return self.name
+
+
+class CheckboxBlock(Block):
+    """
+    Configurable Checkbox block
+    """
+    empty_text = models.TextField(blank=True)
+
+    def save(self, *args, **kwargs):
+        self.blocktype = Block.CHECKBOX
+        super(CheckboxBlock, self).save(*args, **kwargs)
+
+    @cached_property
+    def active(self):
+        return self.checkboxes.filter(value=True)
+
+
+class CheckboxItem(OrderedModel):
+    """
+    Checkbox item
+    """
+    name = models.CharField(max_length=100)
+    value = models.BooleanField(default=False)
+
+    block = models.ForeignKey(CheckboxBlock, related_name="checkboxes", on_delete=models.CASCADE)
+    placement = models.PositiveSmallIntegerField(blank=True)
+
+    class Meta:
+        ordering = ('placement', )
+
+    ordering_field = 'placement'
+    
+    def get_ordering_queryset(self):
+        return self.block.checkboxes.all()
 
     def __str__(self):
         return self.name

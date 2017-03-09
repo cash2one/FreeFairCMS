@@ -29,6 +29,14 @@
         {% for page in pages %}
         <li><a href="{% url 'pages:single-page' page.url %}" class="{% if active == page.url %}active{% endif %}">{{ page.title.upper }}</a></li>
         {% endfor %}
+        <li class="dropwdown">
+        <a href="#" class="dropdown-toggle{% if active == 'state' %} active{% endif %}" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">STATES <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            {% for state in states %}
+              <li><a href="{% url 'pages:state-page' state.state %}">{{ state.get_state_display|upper }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->

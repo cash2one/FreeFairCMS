@@ -10,11 +10,12 @@ from rest_framework.views import APIView
 from django.core.management import call_command
 from django.conf import settings
 
-from .models.pages import Page
+from .models.pages import Page, StatePage, STATES
 from .models.blocks import Block, TextBlock, AccordionBlock, Accordion, InfoBlock, \
-    InfoCategory, InfoContent
+    InfoCategory, InfoContent, CheckboxBlock, CheckboxItem
 from .serializers import PageListSerializer, PageFullSerializer, BlockSerializer, BLOCKTYPES, \
-    AccordionSerializer, InfoCategorySerializer, InfoContentSerializer
+    AccordionSerializer, InfoCategorySerializer, InfoContentSerializer, StatePageListSerializer, \
+    StatePageFullSerializer
 
 
 class AllRegularPagesView(generics.ListCreateAPIView):
@@ -37,7 +38,7 @@ class SinglePageView(generics.RetrieveUpdateDestroyAPIView):
             context = { request: 'request' }
             serializer = BLOCKTYPES[block.blocktype]["serializer_class"]
             b = serializer(block.content_model, data=block_data, context=context)
-            b.is_valid()
+            b.is_valid(raise_exception=True)
 
             b.save()
 
@@ -105,11 +106,97 @@ class DeleteInfoCategoryView(generics.DestroyAPIView):
 class NewInfoContentView(generics.CreateAPIView):
     queryset = InfoContent.objects.all()
     serializer_class = InfoContentSerializer
-
     
 
 class DeleteInfoContentView(generics.DestroyAPIView):
     queryset = InfoContent.objects.all()
+
+
+def get_state_page(state_code, editor):
+    state, created = StatePage.objects.get_or_create(pagetype='State', state=state_code, edited_by=editor)
+
+    if created:
+        issues = CheckboxBlock.objects.create(
+            title="Issues in This State",
+            help_text="For this section, you’ll check a box next to each of the major issues in your state surrounding election and voter reform. Here you can just highlight the main issues.",
+            page=state,
+            empty_text="No issues For now. Keep up the good work!",
+        )
+
+        CheckboxItem.objects.create(name="Corporate and Private Money / Corruption", block=issues)
+        CheckboxItem.objects.create(name="Lack of Public Funding", block=issues)
+        CheckboxItem.objects.create(name="Voter Suppression", block=issues)
+        CheckboxItem.objects.create(name="Gerrymandering", block=issues)
+        CheckboxItem.objects.create(name="Primary Elections", block=issues)
+        CheckboxItem.objects.create(name="Inconsistent Voting Methods", block=issues)
+        CheckboxItem.objects.create(name="Ballot Design and Language", block=issues)
+
+        achievements = CheckboxBlock.objects.create(
+            title="Achievements in This State",
+            help_text="For this section, you’ll check a box next to each of the things your state has already made major progress on. Here you can just highlight those achievements, if any apply.",
+            page=state,
+            empty_text="No achievements in this state yet. Better get to work!",
+        )
+
+        CheckboxItem.objects.create(name="Public Financing", block=achievements)
+        CheckboxItem.objects.create(name="Early Voting", block=achievements)
+        CheckboxItem.objects.create(name="Vote-By-Mail", block=achievements)
+        CheckboxItem.objects.create(name="Automatic Voter Registration", block=achievements)
+        CheckboxItem.objects.create(name="Open Primaries", block=achievements)
+        CheckboxItem.objects.create(name="Ranked Choice Voting", block=achievements)
+        CheckboxItem.objects.create(name="Anti-Corruption Legislation", block=achievements)
+        CheckboxItem.objects.create(name="Non-Partisan Redistricting", block=achievements)
+
+        TextBlock.objects.create(
+                page=state,
+                title="How You Can Get Involved",
+                help_text="Here use a bulleted list to let people know what groups, lawmakers, public officials, etc are working on these issues and how people can get in touch with them to support or join those efforts."
+        )
+
+        TextBlock.objects.create(
+                page=state,
+                title="Recent Legislation",
+                help_text="If there has been any recent legislation proposed at the local or state level, list it here in a bulleted list, so that people can learn more. You can include legislation that wasn’t successful, because sometimes those laws can be re-proposed under new administrations or with changes."
+        )
+
+        TextBlock.objects.create(
+                page=state,
+                title="Reading & Watching on State Issues",
+                help_text="Here you can include a bulleted lists of relevant articles, summaries, or information pages focused on election and voter reform in your state. The goal here is to post information specifically about election and voter reform efforts, not to post general articles about politics or parties in your local area or state."
+        )
+
+    return state
+
+
+class AllStatePagesView(generics.ListAPIView):
+    queryset = StatePage.objects.all()
+    serializer_class = StatePageListSerializer
+
+
+class SingleStatePagesView(SinglePageView):
+    queryset = StatePage.objects.all()
+    serializer_class = StatePageFullSerializer
+    lookup_field = 'state'
+
+
+class UnusedStatesView(APIView):
+    def get(self, request, *args, **kwargs):
+        used = StatePage.objects.values_list('state', flat=True)
+        
+        unused = [state for state in STATES if state[0] not in used]
+
+        return Response(unused)
+
+
+class NewStatePageView(APIView):
+    def post(self, request, *args, **kwargs):
+        state_code = request.data.get('state', None)
+
+        if state_code is None:
+            return Response({ "state": ["This Field is Required"] }, status.HTTP_400_BAD_REQUEST)
+
+        state = get_state_page(state_code, request.user)
+        return Response(StatePageListSerializer(state).data)
 
 
 def zipdir(path, ziph):

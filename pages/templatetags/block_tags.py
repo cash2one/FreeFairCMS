@@ -9,6 +9,7 @@ CONTENT_TEMPLATES = {
     'T': 'pages/blocks/text.html',
     'C': 'pages/blocks/contact.html',
     'I': 'pages/blocks/info.html',
+    'H': 'pages/blocks/checkbox.html',
 }
 
 

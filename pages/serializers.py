@@ -1,13 +1,62 @@
 from rest_framework import serializers
 
 from shared.serializers import LocalDateTimeField
-from .models.pages import Page
+from .models.pages import Page, StatePage
 from .models.blocks import Block, TextBlock, AccordionBlock, Accordion, ContactBlock, \
-        InfoBlock, InfoCategory, InfoContent
+        InfoBlock, InfoCategory, InfoContent, CheckboxBlock, CheckboxItem
 from editors.models import Editor
 
 
-SHARED_BLOCK_FIELDS = ['page', 'placement', 'title', 'blocktype', 'id']
+SHARED_BLOCK_FIELDS = ['page', 'placement', 'title', 'blocktype', 'id', 'help_text']
+
+
+class UpdateRelatedMixin:
+    def update_related(self, data):
+        """
+        Allows updating nested serializer relations.  Should be called
+        during to_internal_value, and expects:
+            - full data from request, before validation
+            - the dictionary key that contains the data for the related objects
+            - the serializer for the nested relation
+        returns the data with the nested relation data removed
+        """
+        serializer = self.Meta.update_related_serializer
+        with open('output.txt', 'w') as f:
+            f.write(str(data))
+
+        field_data = data.pop(self.Meta.update_related_field)
+        field_ids = [c['id'] for c in field_data]
+        objs = serializer.Meta.model.objects.filter(id__in=field_ids)
+
+        for obj in objs:
+            obj_data = [x for x in field_data if x['id'] == obj.id][0]
+            s = serializer(obj, data=obj_data, context=self.context)
+            s.is_valid(raise_exception=True)
+
+            s.save()
+
+        return data
+
+    def process_related_data(self, related_data):
+        """
+        Overwrite this function if the related data needs any specific processing
+        before being serialized
+        """
+        return related_data
+
+    def to_internal_value(self, data):
+        assert self.Meta.update_related_field is not None, (
+            "The {} class requires a value for the `update_related_field` in "
+            "its Meta class".format(self.__class__)
+        )
+
+        assert self.Meta.update_related_serializer is not None, (
+            "The {} class requires a value for the `update_related_serializer` in "
+            "its Meta class".format(self.__class__)
+        )
+
+        data = self.update_related(data)
+        return super(UpdateRelatedMixin, self).to_internal_value(data)
 
 
 class TextBlockSerializer(serializers.ModelSerializer):
@@ -120,31 +169,30 @@ class InfoCategorySerializer(serializers.ModelSerializer):
         fields = ['name', 'contents', 'block', 'id', 'placement']
 
 
-class InfoBlockSerializer(serializers.ModelSerializer):
+class InfoBlockSerializer(UpdateRelatedMixin, serializers.ModelSerializer):
     categories = InfoCategorySerializer(read_only=True, many=True)
-
-    def to_internal_value(self, data):
-        """
-        If it's an update (ie. self.instance exists),
-        update the categories and contents as well
-        """
-        if self.instance is not None:
-            category_data = data.pop('categories')
-            category_ids = [c['id'] for c in category_data]
-            categories = InfoCategory.objects.filter(id__in=category_ids)
-
-            for category in categories:
-                single_category = [c for c in category_data if c['id'] == category.id][0]
-                s = InfoCategorySerializer(category, data=single_category, context=self.context)
-                s.is_valid(raise_exception=True)
-
-                s.save()
-
-        return super(InfoBlockSerializer, self).to_internal_value(data)
 
     class Meta:
         model = InfoBlock
         fields = SHARED_BLOCK_FIELDS + ['categories']
+        update_related_field = 'categories'
+        update_related_serializer = InfoCategorySerializer
+
+
+class CheckboxItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CheckboxItem
+        fields = ['id', 'name', 'value', 'block', 'placement']
+
+
+class CheckboxBlockSerializer(UpdateRelatedMixin, serializers.ModelSerializer):
+    checkboxes = CheckboxItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = CheckboxBlock
+        fields = SHARED_BLOCK_FIELDS + ['checkboxes']
+        update_related_field = 'checkboxes'
+        update_related_serializer = CheckboxItemSerializer
 
 
 BLOCKTYPES = {
@@ -164,6 +212,10 @@ BLOCKTYPES = {
         "queryset": InfoBlock.objects.all(),
         "serializer_class": InfoBlockSerializer
     },
+    Block.CHECKBOX: {
+        "queryset": CheckboxBlock.objects.all(),
+        "serializer_class": CheckboxBlockSerializer
+    }
 }
 
 
@@ -207,4 +259,31 @@ class PageFullSerializer(serializers.ModelSerializer):
             'edited',
             'url',
             'blocks',
+        )
+
+
+class StatePageListSerializer(serializers.ModelSerializer):
+    state_display = serializers.SerializerMethodField(read_only=True)
+
+    def get_state_display(self, obj):
+        return obj.get_state_display()
+
+    class Meta:
+        model = StatePage
+        fields = ('title', 'id', 'published', 'placement', 'state', 'state_display')
+
+
+class StatePageFullSerializer(PageFullSerializer, StatePageListSerializer):
+    class Meta:
+        model = StatePage
+        fields = (
+            'title', 
+            'id', 
+            'published',
+            'edited_by',
+            'edited',
+            'url',
+            'blocks',
+            'state',
+            'state_display'
         )

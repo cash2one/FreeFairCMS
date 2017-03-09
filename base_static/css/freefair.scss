@@ -130,6 +130,31 @@ Navbar
   }
 }
 
+.nav .open > a,
+.nav .open > a:focus,
+.nav .open > a:hover {
+  color: $red-main;
+  background: #fff;
+}
+
+.dropdown-menu {
+  border: 6px $red-main solid;
+  border-radius: 0;
+  top: 56px;
+
+  > li
+    > a {
+      font-family: 'Josefin Sans', sans-serif;
+      color: $blue-main;
+
+      &:hover,
+      &:focus {
+        color: $red-main;
+        background: $white;
+      }
+    }
+}
+
 /**********************************************************************************************
 Block
 ***********************************************************************************************/
@@ -140,7 +165,7 @@ Block
 }
 
 .text-content {
-  margin: 10px 30px;
+  margin: 10px 30px 30px;
 }
 
 /**********************************************************************************************
@@ -384,5 +409,46 @@ InfoBlock
       }
     }
 
+  }
+}
+/**********************************************************************************************
+StatePages
+***********************************************************************************************/
+.state-title {
+  background: $blue-main-transparent;
+  
+  h2 { 
+    color: $blue-main;
+  }
+}
+
+.state-checkboxes {
+  .panel-H {
+    border: 4px $red-main solid;
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        font-family: 'Josefin Sans', sans-serif;
+        font-size: 18px;
+      }
+    }
+
+    .issues-in-this-state li {
+      background: url('../img/Star-Red.jpg') no-repeat left top;
+      background-size: 20px 20px;
+      display: block;
+      padding-left: 25px;
+    }
+
+    .achievements-in-this-state li {
+      background: url('../img/Star-Blue.jpg') no-repeat left top;
+      background-size: 20px 20px;
+      display: block;
+      padding-left: 25px;
+    }
   }
 }

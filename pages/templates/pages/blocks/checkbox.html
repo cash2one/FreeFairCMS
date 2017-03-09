@@ -1,0 +1,10 @@
+<div>
+  <ul class="{{ block.title|slugify}}">
+    {% for checkbox in block.checkboxblock.active %}
+    <li>{{ checkbox.name }}</li>
+    {% endfor %}
+    {% if block.checkboxblock.active|length == 0 %}
+    <p class="text-muted">{{ block.checkboxblock.empty_text }}</p>
+    {% endif %}
+  </ul>
+</div>

@@ -1,7 +1,7 @@
 from django.views.generic import DetailView
 from bakery.views import BuildableDetailView
 
-from .models.pages import Page
+from .models.pages import Page, StatePage
 from .forms import NewPageForm
 
 
@@ -23,3 +23,10 @@ class IndexView(SinglePageView):
         obj = queryset.filter(url="index").get()
 
         return obj
+
+
+class StatePageView(SinglePageView):
+    template_name = 'pages/state_page.html'
+    queryset = StatePage.objects.prefetch_related('blocks').filter(published=True)
+    slug_url_kwarg = 'state'
+    slug_field = 'state'
