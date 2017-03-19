@@ -9,8 +9,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.core.management import call_command
 from django.conf import settings
+from django.utils import timezone
 
-from .models.pages import Page, StatePage, STATES
+from editors.models import Editor
+from editors.permissions import IsAdminEditor
+from .models.pages import Page, StatePage, STATES, PageRevision
 from .models.blocks import Block, TextBlock, AccordionBlock, Accordion, InfoBlock, \
     InfoCategory, InfoContent, CheckboxBlock, CheckboxItem
 from .serializers import PageListSerializer, PageFullSerializer, BlockSerializer, BLOCKTYPES, \
@@ -26,23 +29,6 @@ class AllRegularPagesView(generics.ListCreateAPIView):
 class SinglePageView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Page.objects.select_related('edited_by').all()
     serializer_class = PageFullSerializer
-
-    def put(self, request, *args, **kwargs):
-        blocks_data = request.data.pop('blocks')
-        block_ids = [block['id'] for block in blocks_data]
-        blocks = Block.objects.filter(id__in=block_ids)
-
-        for block_data in blocks_data:
-            block = [b for b in blocks if b.id == block_data['id']][0]
-
-            context = { request: 'request' }
-            serializer = BLOCKTYPES[block.blocktype]["serializer_class"]
-            b = serializer(block.content_model, data=block_data, context=context)
-            b.is_valid(raise_exception=True)
-
-            b.save()
-
-        return super(SinglePageView, self).put(request, *args, **kwargs)
 
 
 class BulkPageUpdateView(APIView):
@@ -178,6 +164,41 @@ class SingleStatePagesView(SinglePageView):
     serializer_class = StatePageFullSerializer
     lookup_field = 'state'
 
+    def put(self, request, *args, **kwargs):
+        if request.user.role != Editor.ADMIN:
+            page = self.get_object()
+
+            data = request.data
+            data['needs_approval'] = True
+            data['edited_by'] = str(request.user)
+            data['edited'] = timezone.localtime(timezone.now()).strftime('%B %-d, %Y, %-I:%M%p')
+
+            revision, _ = PageRevision.objects.update_or_create(
+                page=page, 
+                defaults={ 
+                    'edited_by':self.request.user, 'data': data,
+                }
+            )
+
+            return Response(request.data)
+        else:
+            page = self.get_object()
+
+            if hasattr(page, 'revision'):
+                page.revision.delete()
+
+            return super(SingleStatePagesView, self).put(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        page = self.get_object()
+
+        if hasattr(page, 'revision'):
+            data = page.revision.data
+
+            return Response(data)
+        else:
+            return super(SingleStatePagesView, self).get(request, *args, **kwargs)
+
 
 class UnusedStatesView(APIView):
     def get(self, request, *args, **kwargs):
@@ -197,6 +218,38 @@ class NewStatePageView(APIView):
 
         state = get_state_page(state_code, request.user)
         return Response(StatePageListSerializer(state).data)
+
+
+class ApproveStatePageView(generics.GenericAPIView):
+    permission_classes = [IsAdminEditor, ]
+    queryset = StatePage.objects.all()
+    lookup_field = 'state'
+    serializer_class = StatePageFullSerializer
+
+    def put(self, request, *args, **kwargs):
+        state_page = self.get_object();
+        
+        if not hasattr(state_page, 'revision'):
+            return Response(StatePagueFullSerializer(state_page).data)
+
+        approved = request.data.get('approved', None)
+
+        if approved == True:
+            data = state_page.revision.data
+            state_page.revision.delete()
+            state_page = StatePage.objects.get(id=state_page.id)
+            data.pop('edited', None)
+            serializer = self.get_serializer(state_page, data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+        elif approved == False:
+            state_page.revision.delete()
+            state_page = StatePage.objects.get(id=state_page.id)
+            serializer = self.get_serializer(state_page)
+        else:
+            return Response({"approved": ["Approved must be True or False"]}, status.HTTP_400_BAD_REQUEST)
+            
+        return Response(serializer.data)
 
 
 def zipdir(path, ziph):

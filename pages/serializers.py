@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from shared.serializers import LocalDateTimeField
-from .models.pages import Page, StatePage
+from .models.pages import Page, StatePage, PageRevision
 from .models.blocks import Block, TextBlock, AccordionBlock, Accordion, ContactBlock, \
         InfoBlock, InfoCategory, InfoContent, CheckboxBlock, CheckboxItem
 from editors.models import Editor
@@ -245,7 +245,23 @@ class PageFullSerializer(serializers.ModelSerializer):
         slug_field='email', queryset=Editor.objects.all()
     )
     edited = LocalDateTimeField(format='%B %-d, %Y, %-I:%M%p', read_only=True)
-    blocks = BlockSerializer(many=True, read_only=True)
+    blocks = BlockSerializer(many=True, required=False)
+
+    def to_internal_value(self, data):
+        blocks_data = data.pop('blocks')
+        block_ids = [block['id'] for block in blocks_data]
+        blocks = Block.objects.filter(id__in=block_ids)
+
+        for block_data in blocks_data:
+            block = [b for b in blocks if b.id == block_data['id']][0]
+
+            serializer = BLOCKTYPES[block.blocktype]["serializer_class"]
+            b = serializer(block.content_model, data=block_data, context=self.context)
+            b.is_valid(raise_exception=True)
+
+            b.save()
+
+        return super(PageFullSerializer, self).to_internal_value(data)
 
     class Meta:
         model = Page
@@ -262,16 +278,21 @@ class PageFullSerializer(serializers.ModelSerializer):
 
 class StatePageListSerializer(serializers.ModelSerializer):
     state_display = serializers.SerializerMethodField(read_only=True)
+    needs_approval = serializers.SerializerMethodField()
+
+    def get_needs_approval(self, obj):
+        return hasattr(obj, 'revision')
 
     def get_state_display(self, obj):
         return obj.get_state_display()
 
     class Meta:
         model = StatePage
-        fields = ('title', 'id', 'published', 'placement', 'state', 'state_display')
+        fields = ('title', 'id', 'published', 'placement', 'state', 'state_display', 'needs_approval')
 
 
 class StatePageFullSerializer(PageFullSerializer, StatePageListSerializer):
+
     class Meta:
         model = StatePage
         fields = (
@@ -283,5 +304,6 @@ class StatePageFullSerializer(PageFullSerializer, StatePageListSerializer):
             'url',
             'blocks',
             'state',
-            'state_display'
+            'state_display',
+            'needs_approval',
         )

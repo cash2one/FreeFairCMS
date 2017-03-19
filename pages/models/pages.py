@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
+from django.contrib.postgres.fields import JSONField
 
 from shared.models import OrderedModel
 
@@ -68,7 +69,7 @@ class Page(OrderedModel):
     url = models.SlugField(max_length=150, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True)
-    edited_by = models.ForeignKey(settings.AUTH_USER_MODEL)
+    edited_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
     published = models.BooleanField(default=False)    
     placement = models.PositiveSmallIntegerField(blank=True, null=True)
     pagetype = models.CharField(max_length=50, default="Regular")
@@ -105,8 +106,24 @@ class StatePage(Page):
         unique=True
     )
 
+    editors = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='states')
+
     def save(self, *args, **kwargs):
         self.pagetype = 'State'
         self.title = self.get_state_display()
 
         super(StatePage, self).save(*args, **kwargs)
+
+
+class PageRevision(models.Model):
+    """
+    Holds serialized page data.  For when data is saved by and editor without publishing priveleges
+    """
+    page = models.OneToOneField(Page, related_name="revision")
+    data = JSONField()
+
+    updated = models.DateTimeField(auto_now=True)
+    edited_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
+
+    def __str__(self):
+        return "{}: {}".format(self.page, self.updated)

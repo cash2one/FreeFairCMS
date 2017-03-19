@@ -145,7 +145,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = False
 CORS_REPLACE_HTTPS_REFERER = True
 #CORS_ORIGIN_WHITELIST = (
-#    'dashboard.floodgaming.com',
 #    'localhost:9000'
 #)
 

@@ -34,7 +34,6 @@ class Editor(AbstractBaseUser, PermissionsMixin):
     EDITOR_ROLES = (
         (ADMIN, 'Admin'),
         (EDITOR, 'Editor'),
-        (PUBLISHER, 'Publisher'),
     )
     
     role = models.CharField(

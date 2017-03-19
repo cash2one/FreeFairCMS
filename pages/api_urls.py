@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^admin/state/unused/$', views.UnusedStatesView.as_view()),
     url(r'^admin/state/new/$', views.NewStatePageView.as_view()),
     url(r'^admin/state/(?P<state>\w+)/$', views.SingleStatePagesView.as_view()),
+    url(r'^admin/approve/(?P<state>\w+)/$', views.ApproveStatePageView.as_view()),
 ]
