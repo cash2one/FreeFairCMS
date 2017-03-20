@@ -114,6 +114,9 @@ class StatePage(Page):
 
         super(StatePage, self).save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return "/state/" + self.state
+
 
 class PageRevision(models.Model):
     """

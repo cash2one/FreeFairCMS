@@ -192,7 +192,8 @@ DEFAULT_FROM_EMAIL = 'info@freefairunfettered.org'
 BUILD_DIR = os.path.join(BASE_DIR, 'output/')
 BAKERY_VIEWS = [
     'pages.views.SinglePageView',
-    'pages.views.IndexView'
+    'pages.views.IndexView',
+    'pages.views.StatePageView'
 ]
 
 # Netlify settings
