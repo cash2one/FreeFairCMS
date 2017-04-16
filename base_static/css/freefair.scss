@@ -315,14 +315,15 @@ InfoBlock
     font-size: 16px;
     font-family: 'Josefin Sans', sans-serif;
     @include generic-transition(background .35s, color .35s);
-    background: $blue-main-transparent;
-    color: $blue-main;
+    background: $blue-main-70;
+    color: $white;
     border-top-width: 0;
     border-radius: 0;
   }
 
   .nav-tabs.nav-justified > li > a:hover {
     color: $red-main;
+    background: $blue-main-50;
   }
 
   .nav-tabs.nav-justified > li > a,
@@ -346,11 +347,12 @@ InfoBlock
   .panel-content {
     .nav-tabs.nav-justified > li > a {
       color: $blue-main;
-      background: $white;
+      background: $blue-main-30;
     }
 
     .nav-tabs.nav-justified > li > a:hover {
       color: $red-main;
+      background: $blue-main-20;
     }
 
     .nav-tabs.nav-justified > li.active > a,
@@ -415,7 +417,7 @@ InfoBlock
 StatePages
 ***********************************************************************************************/
 .state-title {
-  background: $blue-main-transparent;
+  background: $blue-main-30;
   
   h2 { 
     color: $blue-main;

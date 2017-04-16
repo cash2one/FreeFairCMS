@@ -11,7 +11,15 @@ $red-main: #c33131;
 $red-main-transparent: rgba(195, 49, 49, .3);
 
 $blue-main: #42598b;
-$blue-main-transparent: rgba(66, 89, 139, .3);
+$blue-main-90: rgba(66, 89, 139, .9);
+$blue-main-80: rgba(66, 89, 139, .8);
+$blue-main-70: rgba(66, 89, 139, .7);
+$blue-main-60: rgba(66, 89, 139, .6);
+$blue-main-50: rgba(66, 89, 139, .5);
+$blue-main-40: rgba(66, 89, 139, .4);
+$blue-main-30: rgba(66, 89, 139, .3);
+$blue-main-20: rgba(66, 89, 139, .2);
+$blue-main-10: rgba(66, 89, 139, .1);
 
 $blue-lightest: #BBDEFB;
 $blue-light: #64B5F6;
@@ -20,6 +28,7 @@ $blue-dark: #1976D2;
 $blue-darkest: #0D47A1;
 
 $white: #FFF;
+$white-transparent: rgba(255, 255, 255, .8);
 
 /**********************************************************************************************
 Sizes
